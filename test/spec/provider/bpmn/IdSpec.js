@@ -103,6 +103,9 @@ describe('id-properties', function() {
     // then
     expect(textField.value).to.equal('');
     expect(textField.getAttribute('class')).to.equal('invalid');
+    var errorMessages = domQuery.all('[data-invalid]', propertiesPanel._container);
+    expect(errorMessages).to.have.length(1);
+    expect(errorMessages[0].textContent).to.equal('Element must have an unique id.');
     expect(businessObject.get('id')).to.equal('ServiceTask_1');
   }));
 
