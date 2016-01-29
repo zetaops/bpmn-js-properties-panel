@@ -300,6 +300,109 @@ describe('form-data', function() {
   }));
 
 
+  it('should not exists form fields when changing from form data to form key and back',
+    inject(function(propertiesPanel) {
+
+    var selectBox = domQuery('select[name=formType]', propertiesPanel._container),
+        formFieldSelectBox = domQuery('select[name=selectedOption]', propertiesPanel._container),
+        bo = getBusinessObject(shape);
+
+    var formFields = getFormFields(bo.extensionElements);
+
+    // given
+    expect(formFields).to.have.length.of(3);
+
+    expect(selectBox.value).to.equal('formData');
+    expect(formFieldSelectBox.options).to.have.length.of(3);
+
+    // when change to 'formKey'
+    selectBox.options[0].selected = 'selected';
+    TestHelper.triggerEvent(selectBox, 'change');
+
+    // then
+    expect(selectBox.value).to.equal('formKey');
+
+    // and when change back to 'formData'
+    selectBox.options[1].selected = 'selected';
+    TestHelper.triggerEvent(selectBox, 'change');
+
+    // then
+    expect(selectBox.value).to.equal('formData');
+    expect(formFieldSelectBox.options).to.have.length.of(0);
+
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.be.empty;
+
+  }));
+
+
+  it('should undo adding a new form field when form fields exist',
+    inject(function(propertiesPanel, commandStack) {
+
+    var selectBox = domQuery('select[name=formType]', propertiesPanel._container),
+        addButton = domQuery('[data-entry=forms] button[data-action=formData\\\.addFormField]', propertiesPanel._container),
+        formFieldSelectBox = domQuery('select[name=selectedOption]', propertiesPanel._container),
+        bo = getBusinessObject(shape);
+
+    var formFields = getFormFields(bo.extensionElements);
+
+    // given
+    expect(formFields).to.have.length.of(3);
+    expect(formFieldSelectBox).to.have.length.of(3);
+
+    // when add new form field
+    TestHelper.triggerEvent(addButton, 'click');
+
+    // then
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length.of(4);
+
+    expect(formFieldSelectBox.options).to.have.length.of(4);
+
+    // undo adding new form field
+    commandStack.undo();
+
+    // then
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length.of(3);
+
+    expect(formFieldSelectBox.options).to.have.length.of(3);
+  }));
+
+
+  it('should undo changing form field property of an element',
+    inject(function(propertiesPanel, commandStack) {
+
+    var formFieldLabel = domQuery('input[name=formFieldLabel]', propertiesPanel._container),
+        bo = getBusinessObject(shape);
+
+    var formFields = getFormFields(bo.extensionElements);
+
+    // given
+    expect(formFields).to.have.length(3);
+    expect(formFieldLabel.value).to.equal('Firstname');
+
+    // when change form field label value
+    TestHelper.triggerValue(formFieldLabel, 'newLabel', 'change');
+
+    // then
+    expect(formFieldLabel.value).to.equal('newLabel');
+
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields[0].get('label')).to.equal(formFieldLabel.value);
+
+    // when undo the change
+    commandStack.undo();
+
+    // then
+    expect(formFieldLabel.value).to.equal('Firstname');
+
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields[0].get('label')).to.equal(formFieldLabel.value);
+
+  }));
+
+
   describe('change from form data to form key', function() {
 
     var taskBo;
@@ -430,5 +533,115 @@ describe('form-data', function() {
     expect(bo.get('camunda:formKey')).to.be.undefined;
 
   }));
+
+
+  it('should undo adding a new form field',
+    inject(function(propertiesPanel, elementRegistry, selection, commandStack) {
+
+    shape = elementRegistry.get('UserTask_1');
+
+    selection.select(shape);
+
+    var selectBox = domQuery('select[name=formType]', propertiesPanel._container),
+        addButton = domQuery('[data-entry=forms] button[data-action=formData\\\.addFormField]', propertiesPanel._container),
+        formFieldSelectBox = domQuery('select[name=selectedOption]', propertiesPanel._container),
+        bo = getBusinessObject(shape);
+
+    var formFields = getFormFields(bo.extensionElements);
+
+    // given
+    expect(formFields).to.be.empty;
+    expect(selectBox.value).to.equal('formKey');
+
+    // when change from form key to form data
+    selectBox.options[1].selected = 'selected';
+    TestHelper.triggerEvent(selectBox, 'change');
+
+    // and when add new form field
+    TestHelper.triggerEvent(addButton, 'click');
+
+    // then
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length.of(1);
+
+    expect(formFieldSelectBox.options).to.have.length.of(1);
+
+    // undo adding new form field
+    commandStack.undo();
+
+    // then
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.be.empty;
+
+    expect(formFieldSelectBox.options).to.have.length.of(0);
+
+  }));
+
+  it('should undo/redo adding a new form field and change a form field value',
+    inject(function(propertiesPanel, elementRegistry, selection, commandStack) {
+
+    shape = elementRegistry.get('UserTask_1');
+
+    selection.select(shape);
+
+    var selectBox = domQuery('select[name=formType]', propertiesPanel._container),
+        addButton = domQuery('[data-entry=forms] button[data-action=formData\\\.addFormField]', propertiesPanel._container),
+        formFieldSelectBox = domQuery('select[name=selectedOption]', propertiesPanel._container),
+        formFieldId = domQuery('input[name=formFieldId]', propertiesPanel._container),
+        bo = getBusinessObject(shape);
+
+    var formFields = getFormFields(bo.extensionElements);
+
+    // given
+    expect(formFields).to.be.empty;
+    expect(selectBox.value).to.equal('formKey');
+
+    // when change from form key to form data
+    selectBox.options[1].selected = 'selected';
+    TestHelper.triggerEvent(selectBox, 'change');
+
+    // and when add new form field
+    TestHelper.triggerEvent(addButton, 'click');
+
+    // then
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length.of(1);
+
+    expect(formFieldSelectBox.options).to.have.length.of(1);
+
+    // and when change a form field value
+    TestHelper.triggerValue(formFieldId, 'myNewId', 'change');
+
+    // then
+    expect(formFieldId.value).to.equal('myNewId');
+
+    // undo change new form field id value
+    commandStack.undo();
+
+    expect(formFieldId.value).not.to.equal('myNewId');
+
+    // undo adding new form field
+    commandStack.undo();
+
+    // then
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.be.empty;
+
+    expect(formFieldSelectBox.options).to.have.length.of(0);
+
+    // when redo
+    commandStack.redo();
+    commandStack.redo();
+
+    // then
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length.of(1);
+
+    expect(formFieldSelectBox.options).to.have.length.of(1);
+
+    expect(formFieldId.value).to.equal('myNewId');
+
+  }));
+
 
 });
