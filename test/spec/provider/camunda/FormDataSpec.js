@@ -555,6 +555,36 @@ describe('form-data', function() {
   }));
 
 
+ it.skip('should not delete anything when no form field is selected',
+    inject(function(propertiesPanel) {
+
+    var deleteButton = domQuery('[data-entry=forms] button[data-action=formData\\\.deleteFormField]', propertiesPanel._container),
+        formFieldSelectBox = domQuery('select[name=selectedOption]', propertiesPanel._container),
+        bo = getBusinessObject(shape);
+
+    var formFields = getFormFields(bo.extensionElements);
+
+    // given
+    expect(formFields).to.have.length(3);
+    expect(formFieldSelectBox.value).to.equal('firstname');
+
+    // when delete the form field selection
+    formFieldSelectBox.options[0].selected = '';
+
+    // then
+    expect(formFieldSelectBox.value).to.equal('');
+
+    // when delete first form field
+    TestHelper.triggerEvent(deleteButton, 'click');
+
+    // then
+    expect(formFieldSelectBox.value).to.equal('');
+
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length.of(3);
+  }));
+
+
   describe('change from form data to form key', function() {
 
     var taskBo;
