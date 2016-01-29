@@ -403,6 +403,158 @@ describe('form-data', function() {
   }));
 
 
+ it('should delete first form field of an element',
+    inject(function(propertiesPanel) {
+
+    var deleteButton = domQuery('[data-entry=forms] button[data-action=formData\\\.deleteFormField]', propertiesPanel._container),
+        formFieldSelectBox = domQuery('select[name=selectedOption]', propertiesPanel._container),
+        bo = getBusinessObject(shape);
+
+    var formFields = getFormFields(bo.extensionElements);
+
+    // given
+    expect(formFields).to.have.length(3);
+    expect(formFieldSelectBox.value).to.equal('firstname');
+
+    // when delete first form field
+    TestHelper.triggerEvent(deleteButton, 'click');
+
+    // then
+    expect(formFieldSelectBox.value).to.equal('lastname');
+
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length.of(2);
+  }));
+
+
+ it('should delete second form field of an element',
+    inject(function(propertiesPanel) {
+
+    var deleteButton = domQuery('[data-entry=forms] button[data-action=formData\\\.deleteFormField]', propertiesPanel._container),
+        formFieldSelectBox = domQuery('select[name=selectedOption]', propertiesPanel._container),
+        bo = getBusinessObject(shape);
+
+    var formFields = getFormFields(bo.extensionElements);
+
+    // given
+    expect(formFields).to.have.length(3);
+    expect(formFieldSelectBox.value).to.equal('firstname');
+
+    // when change form field selection to second entry
+    formFieldSelectBox.options[1].selected = 'selected';
+    TestHelper.triggerEvent(formFieldSelectBox, 'change');
+
+    expect(formFieldSelectBox.value).to.equal('lastname');
+
+    // when delete second form field
+    TestHelper.triggerEvent(deleteButton, 'click');
+
+    // then
+    expect(formFieldSelectBox.value).to.equal('firstname');
+
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length.of(2);
+  }));
+
+
+ it('should form data element exist when delete all form fields of an element',
+    inject(function(propertiesPanel) {
+
+    var deleteButton = domQuery('[data-entry=forms] button[data-action=formData\\\.deleteFormField]', propertiesPanel._container),
+        formFieldSelectBox = domQuery('select[name=selectedOption]', propertiesPanel._container),
+        formTypeSelect = domQuery('select[name=formType]', propertiesPanel._container),
+        bo = getBusinessObject(shape);
+
+    var formFields = getFormFields(bo.extensionElements);
+
+    // given
+    expect(formTypeSelect.value).to.equal('formData');
+
+    expect(formFields).to.have.length(3);
+    expect(formFieldSelectBox.value).to.equal('firstname');
+
+    // when delete all form field
+    TestHelper.triggerEvent(deleteButton, 'click');
+    TestHelper.triggerEvent(deleteButton, 'click');
+    TestHelper.triggerEvent(deleteButton, 'click');
+
+    // then
+    expect(formFieldSelectBox.value).to.have.length.of(0);
+
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length.of(0);
+
+    expect(formTypeSelect.value).to.equal('formData');
+  }));
+
+
+ it('should undo the deletion of the first form field',
+    inject(function(propertiesPanel, commandStack) {
+
+    var deleteButton = domQuery('[data-entry=forms] button[data-action=formData\\\.deleteFormField]', propertiesPanel._container),
+        formFieldSelectBox = domQuery('select[name=selectedOption]', propertiesPanel._container),
+        bo = getBusinessObject(shape);
+
+    var formFields = getFormFields(bo.extensionElements);
+
+    // given
+    expect(formFields).to.have.length(3);
+    expect(formFieldSelectBox.value).to.equal('firstname');
+
+    // when delete first form field
+    TestHelper.triggerEvent(deleteButton, 'click');
+
+    // then
+    expect(formFieldSelectBox.value).to.equal('lastname');
+
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length.of(2);
+
+    // undo the form field deletion
+    commandStack.undo();
+
+    // then
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length(3);
+
+    expect(formFieldSelectBox.value).to.equal('firstname');
+  }));
+
+
+ it('should redo the deletion of the first form field',
+    inject(function(propertiesPanel, commandStack) {
+
+    var deleteButton = domQuery('[data-entry=forms] button[data-action=formData\\\.deleteFormField]', propertiesPanel._container),
+        formFieldSelectBox = domQuery('select[name=selectedOption]', propertiesPanel._container),
+        bo = getBusinessObject(shape);
+
+    var formFields = getFormFields(bo.extensionElements);
+
+    // given
+    expect(formFields).to.have.length(3);
+    expect(formFieldSelectBox.value).to.equal('firstname');
+
+    // when delete first form field
+    TestHelper.triggerEvent(deleteButton, 'click');
+
+    // then
+    expect(formFieldSelectBox.value).to.equal('lastname');
+
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length.of(2);
+
+    // redo the form field deletion
+    commandStack.undo();
+    commandStack.redo();
+
+    // then
+    formFields = getFormFields(bo.extensionElements);
+    expect(formFields).to.have.length(2);
+
+    expect(formFieldSelectBox.value).to.equal('lastname');
+  }));
+
+
   describe('change from form data to form key', function() {
 
     var taskBo;
