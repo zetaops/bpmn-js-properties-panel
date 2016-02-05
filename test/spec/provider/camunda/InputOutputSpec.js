@@ -125,7 +125,7 @@ describe('input-output-parameter-properties', function() {
 
     var bo = getBusinessObject(shape);
 
-    var addInputParameterButton = domQuery('div[id=cam-extension-elements-wrapper-inputs] button[id=newElementAction]', propertiesPanel._container);
+    var addInputParameterButton = domQuery('button[id=cam-extension-elements-create-inputs]', propertiesPanel._container);
 
     // when
     TestHelper.triggerEvent(addInputParameterButton, 'click');
@@ -154,7 +154,7 @@ describe('input-output-parameter-properties', function() {
     var shape = elementRegistry.get('Without_Input_Output');
     selection.select(shape);
 
-    var addInputParameterButton = domQuery('div[id=cam-extension-elements-wrapper-inputs] button[id=newElementAction]', propertiesPanel._container);
+    var addInputParameterButton = domQuery('button[id=cam-extension-elements-create-inputs]', propertiesPanel._container);
     TestHelper.triggerEvent(addInputParameterButton, 'click');
 
     var bo = getBusinessObject(shape);
@@ -185,7 +185,7 @@ describe('input-output-parameter-properties', function() {
 
     var bo = getBusinessObject(shape);
 
-    var addOutputParameterButton = domQuery('div[id=cam-extension-elements-wrapper-outputs] button[id=newElementAction]', propertiesPanel._container);
+    var addOutputParameterButton = domQuery('button[id=cam-extension-elements-create-outputs]', propertiesPanel._container);
 
     // when
     TestHelper.triggerEvent(addOutputParameterButton, 'click');
@@ -214,7 +214,7 @@ describe('input-output-parameter-properties', function() {
     var shape = elementRegistry.get('Without_Input_Output');
     selection.select(shape);
 
-    var addOutputParameterButton = domQuery('div[id=cam-extension-elements-wrapper-outputs] button[id=newElementAction]', propertiesPanel._container);
+    var addOutputParameterButton = domQuery('button[id=cam-extension-elements-create-outputs]', propertiesPanel._container);
     TestHelper.triggerEvent(addOutputParameterButton, 'click');
 
     var bo = getBusinessObject(shape);
