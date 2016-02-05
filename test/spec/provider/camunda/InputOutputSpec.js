@@ -134,7 +134,7 @@ describe('input-output-parameter-properties', function() {
     var inputsSelection     = domQuery('select[id=cam-extension-elements-inputs]', propertiesPanel._container),
         parameterNameInput  = domQuery('input[id=camunda-parameter-name]', propertiesPanel._container),
         parameterTypeSelect = domQuery('select[id=camunda-parameter-type]', propertiesPanel._container),
-        parameterTextValue  = domQuery('textarea[id=camunda-parameter-value]', propertiesPanel._container);
+        parameterTextValue  = domQuery('textarea[id=camunda-parameter-type-text]', propertiesPanel._container);
 
     expect(inputsSelection.options.length).to.equal(1);
     expect(inputsSelection.options[0].selected).to.equal(true);
@@ -194,7 +194,7 @@ describe('input-output-parameter-properties', function() {
     var outputsSelection    = domQuery('select[id=cam-extension-elements-outputs]', propertiesPanel._container),
         parameterNameInput  = domQuery('input[id=camunda-parameter-name]', propertiesPanel._container),
         parameterTypeSelect = domQuery('select[id=camunda-parameter-type]', propertiesPanel._container),
-        parameterTextValue  = domQuery('textarea[id=camunda-parameter-value]', propertiesPanel._container);
+        parameterTextValue  = domQuery('textarea[id=camunda-parameter-type-text]', propertiesPanel._container);
 
     expect(outputsSelection.options.length).to.equal(1);
     expect(outputsSelection.options[0].selected).to.equal(true);
